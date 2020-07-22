@@ -14,12 +14,12 @@ function myCreateConnection() {
       database : 'local_gwl_database',
       port     : '3306',
       user     : 'root',
-      password : 'yUJKL78L91P'
+      password : 'raatDailyRoutine'
 
   });
 }
 
-
+/* checkpoint */
 
 var app = express();
 
