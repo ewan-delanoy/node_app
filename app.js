@@ -97,3 +97,11 @@ app.get('/books/:id', function(req, res) {
 app.listen(3007,'127.0.0.1',function() {
      console.log("Server has started !")
 });
+
+const request = require('request');
+
+request('https://127.0.0.1:3007/', { json: true }, (err, res, body) => {
+  if (err) { return console.log(err); }
+  console.log(body.url);
+  console.log(body.explanation);
+});
