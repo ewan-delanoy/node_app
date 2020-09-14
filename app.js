@@ -1,6 +1,6 @@
 
 
-var mysql = require('mysql');
+
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -8,16 +8,21 @@ var path = require('path');
 
 var connection = {};
 
+/*
+var mysql = require('mysql');
 function myCreateConnection() {
-  connection = mysql.createConnection({
+  return( mysql.createConnection({
       host     : 'localhost',
       database : 'local_gwl_database',
       port     : '3306',
       user     : 'root',
       password : 'raatDailyRoutine'
 
-  });
+  }));
 }
+*/
+
+var mysqlModule = require ('./models/mysql.js');
 
 /* checkpoint */
 
@@ -34,7 +39,7 @@ app.get('/', function(req, res) {
 
 // INDEX route
 app.get('/books', function(req, res) {
-  myCreateConnection();
+  connection = mysqlModule.connection();
   connection.query('SELECT * FROM `books`', function (error, results, fields) {
       if (error)
           throw error;
@@ -48,7 +53,7 @@ app.post('/books', function(req, res) {
   var title = req.body.title ;
   var image = req.body.image ;
   var descr = req.body.description ;
-  myCreateConnection();
+  connection = mysqlModule.connection();
   // save to database
   /* sql='INSERT INTO `books` (`ìd`,`title`,`image`) VALUES(\'7\',\''+ name + '\',\'' + image +'\');'; */
   sql1='SELECT MAX(`id`) as maxid FROM `books`';
@@ -75,7 +80,7 @@ app.get('/books/new', function(req, res) {
 
 // SHOW route
 app.get('/books/:id', function(req, res) {
-  myCreateConnection();
+  connection = mysqlModule.connection();
   sql1='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
   connection.query(sql1, [req.params.id], function (error, results,foundBook, fields) {
       if (error) {
@@ -98,6 +103,7 @@ app.listen(3007,'127.0.0.1',function() {
      console.log("Server has started !")
 });
 
+/*
 const request = require('request');
 
 request('https://127.0.0.1:3007/', { json: true }, (err, res, body) => {
@@ -105,3 +111,4 @@ request('https://127.0.0.1:3007/', { json: true }, (err, res, body) => {
   console.log(body.url);
   console.log(body.explanation);
 });
+*/
