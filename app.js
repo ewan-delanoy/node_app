@@ -8,21 +8,7 @@ var path = require('path');
 
 var connection = {};
 
-/*
-var mysql = require('mysql');
-function myCreateConnection() {
-  return( mysql.createConnection({
-      host     : 'localhost',
-      database : 'local_gwl_database',
-      port     : '3306',
-      user     : 'root',
-      password : 'raatDailyRoutine'
-
-  }));
-}
-*/
-
-var mysqlModule = require ('./models/mysql.js');
+var bookModule = require ('./models/book.js');
 
 /* checkpoint */
 
@@ -39,7 +25,7 @@ app.get('/', function(req, res) {
 
 // INDEX route
 app.get('/books', function(req, res) {
-  connection = mysqlModule.connection();
+  connection = bookModule.initiateConnection();
   connection.query('SELECT * FROM `books`', function (error, results, fields) {
       if (error)
           throw error;
@@ -53,7 +39,7 @@ app.post('/books', function(req, res) {
   var title = req.body.title ;
   var image = req.body.image ;
   var descr = req.body.description ;
-  connection = mysqlModule.connection();
+  connection = bookModule.initiateConnection();
   // save to database
   /* sql='INSERT INTO `books` (`ìd`,`title`,`image`) VALUES(\'7\',\''+ name + '\',\'' + image +'\');'; */
   sql1='SELECT MAX(`id`) as maxid FROM `books`';
@@ -80,7 +66,7 @@ app.get('/books/new', function(req, res) {
 
 // SHOW route
 app.get('/books/:id', function(req, res) {
-  connection = mysqlModule.connection();
+  connection = bookModule.initiateConnection();
   sql1='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
   connection.query(sql1, [req.params.id], function (error, results,foundBook, fields) {
       if (error) {

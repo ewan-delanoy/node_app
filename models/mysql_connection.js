@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 
-function mysqlConnection() {
+
+function mcInitiateConnection() {
   return( mysql.createConnection({
       host     : 'localhost',
       database : 'local_gwl_database',
@@ -11,4 +12,6 @@ function mysqlConnection() {
   }));
 }
 
-module.exports={connection : mysqlConnection};
+module.exports={
+    initiateConnection : mcInitiateConnection
+};
