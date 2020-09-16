@@ -5,9 +5,9 @@ var mcInitiateConnection = mc.initiateConnection ;
 function mcCreateModel(connection) {
   sql='CREATE TABLE `books` (' +
       '`id` int(11) NOT NULL,' +
-      '`title` varchar(50) NOT NULL,' +
-      '`image` varchar(255) NOT NULL,' +
-      '`description` mediumtext' +
+      '`author_id` int(11) NOT NULL,' +
+      '`author` varchar(50) NOT NULL,' +
+      '`text` mediumtext' +
       ') ENGINE=InnoDB DEFAULT CHARSET=utf8;' ;
   connection.query(sql, function (error, results, fields) {
       if (error)
@@ -31,25 +31,6 @@ CREATE TABLE `books` (
 function mcDropModel(connection) {
   mc.dropModel(connection,'comments');
 }
-
-
-function mcInsertValue(connection,data,aftermath) {
-  sql1='SELECT MAX(`id`) as maxid FROM `books`';
-  connection.query(sql1, function (error1, results1, fields1) {
-      if (error1)
-          throw error1;
-      idx1 = results1[0].maxid + 1;
-      sql2='INSERT INTO `books` (`id`,`title`,`image`,`description`) VALUES(?,?,?,?);';
-      connection.query(sql2, [idx1,data.title,data.image,data.description], function (error, results, fields) {
-          if (error) {
-              throw error;
-          } else {
-              connection.end();
-              res.redirect('/books');
-          }
-      });
-  });
-});
 
 function mcSeedModel(connection) {
   sql='INSERT INTO `books` (`id`, `title`, `image`, `description`) VALUES ' +
@@ -90,8 +71,8 @@ module.exports={
 };
 
 /*
-connection = commentModule.initiateConnection();
-commentModule.dropModel(connection);
-commentModule.createModel(connection);
-commentModule.seedModel(connection);
+connection = bookModule.initiateConnection();
+bookModule.dropModel(connection);
+bookModule.createModel(connection);
+bookModule.seedModel(connection);
 */

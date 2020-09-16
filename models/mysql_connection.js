@@ -12,6 +12,16 @@ function mcInitiateConnection() {
   }));
 }
 
+
+function mcDropModel(connection,modelName) {
+  sql = 'DROP TABLE IF EXISTS `' + modelName + '`;';
+  connection.query(sql, function (error, results, fields) {
+      if (error)
+          throw error;
+  });
+}
+
 module.exports={
-    initiateConnection : mcInitiateConnection
+    initiateConnection : mcInitiateConnection,
+    dropModel : mcDropModel
 };
