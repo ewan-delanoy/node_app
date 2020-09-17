@@ -29,7 +29,7 @@ CREATE TABLE `books` (
 */
 
 function mcDropModel(connection) {
-  mc.dropModel(connection,'comments');
+  mc.dropModel(connection,'books');
 }
 
 
@@ -44,48 +44,29 @@ function mcInsertValue(connection,data,aftermath) {
           if (error) {
               throw error;
           } else {
-              connection.end();
-              res.redirect('/books');
+              aftermath();
           }
       });
   });
-});
+}
 
 function mcSeedModel(connection) {
-  sql='INSERT INTO `books` (`id`, `title`, `image`, `description`) VALUES ' +
-      '(1, \'Barren Metal\', \'https://i.ibb.co/9chC4tL/barren-metal.jpg\', \'d1\'),' +
-      '(2, \'The Missisipi flows into the Tiber\', \'https://i.ibb.co/WpG5Hd9/mississipi.jpg\', \'d2\'),' +
-      '(3, \'The broken pump in Tanzania\', \'https://i.ibb.co/3mf7fzz/pump-in-tanzania.jpg\', \'d3\');COMMIT;' ;
+  mcInsertValue(connection,{title:'Barren Metal',image:'https://i.ibb.co/9chC4tL/barren-metal.jpg',description:'d1'},function(){});
+  mcInsertValue(connection,{title:'The Missisipi flows into the Tiber',image:'https://i.ibb.co/WpG5Hd9/mississipi.jpg',description:'d2'},function(){});
+  mcInsertValue(connection,{title:'The broken pump in Tanzania',image:'https://i.ibb.co/3mf7fzz/pump-in-tanzania.jpg',description:'d3'},function(){});
+  sql='COMMIT;' ;
   connection.query(sql, function (error, results, fields) {
       if (error)
           throw error;
-      /*
-      connection.query('COMMIT;', function (error2, results2, fields2) {
-              if (error2)
-                  throw error2;
-      });
-      */
   });
 }
 
-/*
---
--- Dumping data for table `books`
---
-
-INSERT INTO `books` (`id`, `title`, `image`, `description`) VALUES
-(1, 'Barren Metal', 'https://i.ibb.co/9chC4tL/barren-metal.jpg', 'd1'),
-(2, 'The Missisipi flows into the Tiber', 'https://i.ibb.co/WpG5Hd9/mississipi.jpg', 'd2'),
-(3, 'The broken pump in Tanzania', 'https://i.ibb.co/3mf7fzz/pump-in-tanzania.jpg', 'd3'),
-(4, 'abc', 'def', NULL),
-(5, 'ddd56', 'tyuio', 'pqdfgtrs');
-COMMIT;
-*/
 
 module.exports={
     createModel : mcCreateModel,
     dropModel : mcDropModel,
     initiateConnection : mcInitiateConnection,
+    insertValue : mcInsertValue,
     seedModel : mcSeedModel
 };
 

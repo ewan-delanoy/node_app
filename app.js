@@ -9,10 +9,12 @@ var path = require('path');
 var connection = {};
 
 var bookModule = require ('./models/book.js');
+var commentModule = require ('./models/comment.js');
 
 /* checkpoint */
 
 var app = express();
+
 
 
 app.set('view engine','ejs');
@@ -36,28 +38,13 @@ app.get('/books', function(req, res) {
 
 // CREATE route
 app.post('/books', function(req, res) {
-  var title = req.body.title ;
-  var image = req.body.image ;
-  var descr = req.body.description ;
-  connection = bookModule.initiateConnection();
-  // save to database
-  /* sql='INSERT INTO `books` (`ìd`,`title`,`image`) VALUES(\'7\',\''+ name + '\',\'' + image +'\');'; */
-  sql1='SELECT MAX(`id`) as maxid FROM `books`';
-  connection.query(sql1, function (error1, results1, fields1) {
-      if (error1)
-          throw error1;
-      idx1 = results1[0].maxid + 1;
-      sql2='INSERT INTO `books` (`id`,`title`,`image`,`description`) VALUES(?,?,?,?);';
-      connection.query(sql2, [idx1,title,image,descr], function (error, results, fields) {
-          if (error) {
-              throw error;
-          } else {
-              connection.end();
-              res.redirect('/books');
-          }
-      });
-  });
+   connection = bookModule.initiateConnection();
+   bookModule.insertValue(connection,req.body,function(){
+     connection.end();
+     res.redirect('/books');
+   });
 });
+
 
 // NEW route
 app.get('/books/new', function(req, res) {
@@ -72,10 +59,7 @@ app.get('/books/:id', function(req, res) {
       if (error) {
           throw error;
       } else {
-          /* console.log(results); */
           connection.end();
-          console.log(results[0]);
-          console.log(results[0].title);
           foundBook = results[0];
           res.render('show.ejs',{book:foundBook});
       }
@@ -86,7 +70,7 @@ app.get('/books/:id', function(req, res) {
 
 
 app.listen(3007,'127.0.0.1',function() {
-     console.log("Server has started !")
+     console.log("Server has started !");
 });
 
 /*

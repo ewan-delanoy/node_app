@@ -14,10 +14,15 @@ function mcInitiateConnection() {
 
 
 function mcDropModel(connection,modelName) {
-  sql = 'DROP TABLE IF EXISTS `' + modelName + '`;';
+  sql = 'DROP TABLE IF EXISTS `' + modelName + '`';
+  sql2 = 'COMMIT;'
   connection.query(sql, function (error, results, fields) {
       if (error)
           throw error;
+          connection.query(sql2, function (error2, results2, fields2) {
+              if (error2)
+                  throw error2;
+          });
   });
 }
 
