@@ -51,15 +51,13 @@ function mcInsertValue(connection,data,aftermath) {
 }
 
 function mcSeedModel(connection) {
-  mcInsertValue(connection,{title:'Barren Metal',image:'https://i.ibb.co/9chC4tL/barren-metal.jpg',description:'d1'},function(){});
-  mcInsertValue(connection,{title:'The Missisipi flows into the Tiber',image:'https://i.ibb.co/WpG5Hd9/mississipi.jpg',description:'d2'},function(){});
-  mcInsertValue(connection,{title:'The broken pump in Tanzania',image:'https://i.ibb.co/3mf7fzz/pump-in-tanzania.jpg',description:'d3'},function(){});
-  sql='COMMIT;' ;
-  connection.query(sql, function (error, results, fields) {
-      if (error)
-          throw error;
+  mcInsertValue(connection,{title:'Barren Metal',image:'https://i.ibb.co/9chC4tL/barren-metal.jpg',description:'d1'},function(){
+    mcInsertValue(connection,{title:'The Missisipi flows into the Tiber',image:'https://i.ibb.co/WpG5Hd9/mississipi.jpg',description:'d2'},function(){
+      mcInsertValue(connection,{title:'The broken pump in Tanzania',image:'https://i.ibb.co/3mf7fzz/pump-in-tanzania.jpg',description:'d3'},function(){});
+    });
   });
 }
+
 
 
 module.exports={
@@ -71,8 +69,8 @@ module.exports={
 };
 
 /*
-connection = commentModule.initiateConnection();
-commentModule.dropModel(connection);
-commentModule.createModel(connection);
-commentModule.seedModel(connection);
+connection = bookModule.initiateConnection();
+bookModule.dropModel(connection);
+bookModule.createModel(connection);
+bookModule.seedModel(connection);
 */

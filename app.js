@@ -55,13 +55,20 @@ app.get('/books/new', function(req, res) {
 app.get('/books/:id', function(req, res) {
   connection = bookModule.initiateConnection();
   sql1='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
-  connection.query(sql1, [req.params.id], function (error, results,foundBook, fields) {
+  connection.query(sql1, [req.params.id], function (error, results, fields) {
       if (error) {
           throw error;
       } else {
-          connection.end();
-          foundBook = results[0];
-          res.render('show.ejs',{book:foundBook});
+          sql2='SELECT id,author,text FROM `comments` WHERE `book_id` = ? ;' ;
+          connection.query(sql2, [req.params.id], function (error2, foundComments, fields2) {
+            if (error2) {
+                throw error2;
+            } else {
+              connection.end();
+              foundBook = results[0];
+              res.render('show.ejs',{book:foundBook,comments:foundComments});
+            }
+          });
       }
   });
 

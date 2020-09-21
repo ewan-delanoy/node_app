@@ -6,6 +6,16 @@
 
 <img src="<%= book.image %>"> </img>
 
+<% comments.forEach(function(comment){ %>
+
+    <p>
+        <strong> <%= comment.author %> </strong> - 
+        <%= comment.text %>
+
+    </p>
+
+<% })%>
+
 <p><%= book.description %></p>
 
 <%- include ("partials/footer") %>

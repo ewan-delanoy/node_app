@@ -5,7 +5,7 @@ var mcInitiateConnection = mc.initiateConnection ;
 function mcCreateModel(connection) {
   sql='CREATE TABLE `comments` (' +
       '`id` int(11) NOT NULL,' +
-      '`post_id` int(11) NOT NULL,' +
+      '`book_id` int(11) NOT NULL,' +
       '`author` varchar(50) NOT NULL,' +
       '`text` mediumtext' +
       ') ENGINE=InnoDB DEFAULT CHARSET=utf8;' ;
@@ -26,25 +26,24 @@ function mcInsertValue(connection,data,aftermath) {
       if (error1)
           throw error1;
       idx1 = results1[0].maxid + 1;
-      sql2='INSERT INTO `comments` (`id`,`post_id`,`author`,`text`) VALUES(?,?,?,?);';
-      connection.query(sql2, [idx1,data.post_id,data.author,data.text], function (error, results, fields) {
+      sql2='INSERT INTO `comments` (`id`,`book_id`,`author`,`text`) VALUES(?,?,?,?);';
+      connection.query(sql2, [idx1,data.book_id,data.author,data.text], function (error, results, fields) {
           if (error) {
               throw error;
           } else {
-              aftermath();
+            aftermath();
           }
       });
   });
 }
 
 function mcSeedModel(connection) {
-  mcInsertValue(connection,{post_id:1,author:'Homer',text:'This place is great, but I wish there was internet'},function(){});
-  mcInsertValue(connection,{post_id:2,author:'Homer',text:'This place is great, but I wish there was internet'},function(){});
-  mcInsertValue(connection,{post_id:3,author:'Homer',text:'This place is great, but I wish there was internet'},function(){});
-  sql='COMMIT;' ;
-  connection.query(sql, function (error, results, fields) {
-      if (error)
-          throw error;
+  mcInsertValue(connection,{book_id:1,author:'Homer',text:'This place (1) is great, but I wish there was internet'},function(){
+    mcInsertValue(connection,{book_id:2,author:'Homer',text:'This place (2) is great, but I wish there was internet'},function(){
+      mcInsertValue(connection,{book_id:3,author:'Homer',text:'This place (3) is great, but I wish there was internet'},function(){
+        mcInsertValue(connection,{book_id:2,author:'Homer',text:'This place (4) is great, but I wish there was internet'},function(){});
+      });
+    });
   });
 }
 
