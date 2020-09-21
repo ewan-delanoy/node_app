@@ -31,7 +31,7 @@ app.get('/books', function(req, res) {
   connection.query('SELECT * FROM `books`', function (error, results, fields) {
       if (error)
           throw error;
-      res.render('index',{books:results});
+      res.render('books/index',{books:results});
   });
   connection.end();
 });
@@ -48,7 +48,7 @@ app.post('/books', function(req, res) {
 
 // NEW route
 app.get('/books/new', function(req, res) {
-  res.render('new.ejs');
+  res.render('books/new.ejs');
 });
 
 // SHOW route
@@ -66,7 +66,7 @@ app.get('/books/:id', function(req, res) {
             } else {
               connection.end();
               foundBook = results[0];
-              res.render('show.ejs',{book:foundBook,comments:foundComments});
+              res.render('books/show.ejs',{book:foundBook,comments:foundComments});
             }
           });
       }
@@ -75,6 +75,16 @@ app.get('/books/:id', function(req, res) {
 
 });
 
+// =======================================================
+// COMMENTS ROUTES
+// =======================================================
+
+
+
+// NEW route
+app.get('/books/:id/comments/new', function(req, res) {
+  res.render('comments/new.ejs');
+});
 
 app.listen(3007,'127.0.0.1',function() {
      console.log("Server has started !");
