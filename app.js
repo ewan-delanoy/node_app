@@ -8,6 +8,7 @@ var path = require('path');
 
 var connection = {};
 
+var mysqlModule = require ('./models/mysql_connection.js');
 var bookModule = require ('./models/book.js');
 var commentModule = require ('./models/comment.js');
 
@@ -27,7 +28,7 @@ app.get('/', function(req, res) {
 
 // INDEX route
 app.get('/books', function(req, res) {
-  connection = bookModule.initiateConnection();
+  connection = mysqlModule.initiateConnection();
   connection.query('SELECT * FROM `books`', function (error, results, fields) {
       if (error)
           throw error;
@@ -38,7 +39,7 @@ app.get('/books', function(req, res) {
 
 // CREATE route
 app.post('/books', function(req, res) {
-   connection = bookModule.initiateConnection();
+   connection = mysqlModule.initiateConnection();
    bookModule.insertValue(connection,req.body,function(){
      connection.end();
      res.redirect('/books');
@@ -48,12 +49,12 @@ app.post('/books', function(req, res) {
 
 // NEW route
 app.get('/books/new', function(req, res) {
-  res.render('books/new.ejs');
+  res.render('books/new');
 });
 
 // SHOW route
 app.get('/books/:id', function(req, res) {
-  connection = bookModule.initiateConnection();
+  connection = mysqlModule.initiateConnection();
   sql1='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
   connection.query(sql1, [req.params.id], function (error, results, fields) {
       if (error) {
@@ -66,7 +67,7 @@ app.get('/books/:id', function(req, res) {
             } else {
               connection.end();
               foundBook = results[0];
-              res.render('books/show.ejs',{book:foundBook,comments:foundComments});
+              res.render('books/show',{book:foundBook,comments:foundComments});
             }
           });
       }
@@ -83,8 +84,44 @@ app.get('/books/:id', function(req, res) {
 
 // NEW route
 app.get('/books/:id/comments/new', function(req, res) {
-  res.render('comments/new.ejs');
+  connection = bookModule.initiateConnection();
+  sql1='SELECT id,title,image,description FROM `books` WHERE `id` = ? ;' ;
+  connection.query(sql1, [req.params.id], function (error, results, fields) {
+      if (error) {
+          throw error;
+      } else {
+        connection.end();
+        foundBook = results[0];
+        res.render('comments/new',{book:foundBook});
+      }
+  });
 });
+
+// CREATE route
+app.post('/books/:id/comments', function(req, res) {
+   connection = commentModule.initiateConnection();
+   // lookup book using ID
+   bookId = req.params.id;
+   sql1='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
+   connection.query(sql1, [bookId], function (error, results, fields) {
+       if (error) {
+           console.log(error);
+           res.redirect("/books");
+       } else {
+         foundBook = results[0];
+         foundComment = req.body.comment;
+         foundData = {book_id:bookId,author:foundComment.author,text:foundComment.text};
+         console.log(req.body);
+         console.log(foundData);
+         commentModule.insertValue(connection,foundData,function(){
+           connection.end();
+           res.redirect('/books/' + bookId );
+
+         });
+      }
+   });
+});
+
 
 app.listen(3007,'127.0.0.1',function() {
      console.log("Server has started !");
