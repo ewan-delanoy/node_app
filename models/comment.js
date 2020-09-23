@@ -4,7 +4,7 @@ var mcInitiateConnection = mc.initiateConnection ;
 
 function mcCreateModel(connection) {
   sql='CREATE TABLE `comments` (' +
-      '`id` int(11) NOT NULL,' +
+      '`id` int(11) PRIMARY KEY,' +
       '`book_id` int(11) NOT NULL,' +
       '`author` varchar(50) NOT NULL,' +
       '`text` mediumtext' +
@@ -38,10 +38,10 @@ function mcInsertValue(connection,data,aftermath) {
 }
 
 function mcSeedModel(connection) {
-  mcInsertValue(connection,{book_id:1,author:'Homer',text:'This place (1) is great, but I wish there was internet'},function(){
-    mcInsertValue(connection,{book_id:2,author:'Homer',text:'This place (2) is great, but I wish there was internet'},function(){
-      mcInsertValue(connection,{book_id:3,author:'Homer',text:'This place (3) is great, but I wish there was internet'},function(){
-        mcInsertValue(connection,{book_id:2,author:'Homer',text:'This place (4) is great, but I wish there was internet'},function(){});
+  mcInsertValue(connection,{book_id:1,author:'Homer',text:'Bacon ipsum dolor amet meatball boudin leberkas capicola tongue cow. Pork belly venison landjaeger, brisket ham ribeye sirloin hamburger beef fatback tail. Meatball landjaeger swine tongue jerky pig. Chislic tenderloin doner alcatra fatback drumstick sirloin strip steak buffalo andouille kevin salami chuck biltong. Ham swine leberkas salami beef pork belly.'},function(){
+    mcInsertValue(connection,{book_id:2,author:'Homer',text:'Bacon ipsum dolor amet meatball boudin leberkas capicola tongue cow. Pork belly venison landjaeger, brisket ham ribeye sirloin hamburger beef fatback tail. Meatball landjaeger swine tongue jerky pig. Chislic tenderloin doner alcatra fatback drumstick sirloin strip steak buffalo andouille kevin salami chuck biltong. Ham swine leberkas salami beef pork belly.'},function(){
+      mcInsertValue(connection,{book_id:3,author:'Homer',text:'Bacon ipsum dolor amet meatball boudin leberkas capicola tongue cow. Pork belly venison landjaeger, brisket ham ribeye sirloin hamburger beef fatback tail. Meatball landjaeger swine tongue jerky pig. Chislic tenderloin doner alcatra fatback drumstick sirloin strip steak buffalo andouille kevin salami chuck biltong. Ham swine leberkas salami beef pork belly.'},function(){
+        mcInsertValue(connection,{book_id:2,author:'Homer',text:'Bacon (2) ipsum dolor amet meatball boudin leberkas capicola tongue cow. Pork belly venison landjaeger, brisket ham ribeye sirloin hamburger beef fatback tail. Meatball landjaeger swine tongue jerky pig. Chislic tenderloin doner alcatra fatback drumstick sirloin strip steak buffalo andouille kevin salami chuck biltong. Ham swine leberkas salami beef pork belly.'},function(){});
       });
     });
   });

@@ -4,7 +4,7 @@ var mcInitiateConnection = mc.initiateConnection ;
 
 function mcCreateModel(connection) {
   sql='CREATE TABLE `books` (' +
-      '`id` int(11) NOT NULL,' +
+      '`id` int(11) PRIMARY KEY,' +
       '`title` varchar(50) NOT NULL,' +
       '`image` varchar(255) NOT NULL,' +
       '`description` mediumtext' +

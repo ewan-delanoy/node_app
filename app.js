@@ -19,6 +19,7 @@ var app = express();
 
 
 app.set('view engine','ejs');
+app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser.urlencoded({extended:true}));
 
@@ -55,7 +56,7 @@ app.get('/books/new', function(req, res) {
 // SHOW route
 app.get('/books/:id', function(req, res) {
   connection = mysqlModule.initiateConnection();
-  sql1='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
+  sql1='SELECT id,title,image,description FROM `books` WHERE `id` = ? ;' ;
   connection.query(sql1, [req.params.id], function (error, results, fields) {
       if (error) {
           throw error;
