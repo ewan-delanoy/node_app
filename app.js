@@ -67,25 +67,13 @@ app.get('/books/new', function(req, res) {
 // SHOW route
 app.get('/books/:id', function(req, res) {
   connection = mysqlModule.initiateConnection();
-  sql1='SELECT id,title,image,description FROM `books` WHERE `id` = ? ;' ;
-  connection.query(sql1, [req.params.id], function (error, results, fields) {
-      if (error) {
-          throw error;
-      } else {
-          sql2='SELECT id,author,text FROM `comments` WHERE `book_id` = ? ;' ;
-          connection.query(sql2, [req.params.id], function (error2, foundComments, fields2) {
-            if (error2) {
-                throw error2;
-            } else {
-              connection.end();
-              foundBook = results[0];
-              res.render('books/show',{book:foundBook,comments:foundComments});
-            }
-          });
-      }
+  bookId = req.params.id;
+  bookModule.seekItem(connection, bookId, function(){}, function(foundBook){
+    commentModule.seekAssociatedItems(connection, bookId, function(){},function(foundComments){
+      connection.end();
+      res.render('books/show',{book:foundBook,comments:foundComments});
+    });
   });
-
-
 });
 
 // =======================================================
@@ -97,15 +85,10 @@ app.get('/books/:id', function(req, res) {
 // NEW route
 app.get('/books/:id/comments/new', function(req, res) {
   connection = mysqlModule.initiateConnection();
-  sql1='SELECT id,title,image,description FROM `books` WHERE `id` = ? ;' ;
-  connection.query(sql1, [req.params.id], function (error, results, fields) {
-      if (error) {
-          throw error;
-      } else {
-        connection.end();
-        foundBook = results[0];
-        res.render('comments/new',{book:foundBook});
-      }
+  bookId = req.params.id ;
+  bookModule.seekItem(connection, bookId, function(){}, function(foundBook){
+    connection.end();
+    res.render('comments/new',{book:foundBook});
   });
 });
 

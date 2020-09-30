@@ -46,13 +46,26 @@ function mcSeedModel(connection) {
   });
 }
 
+function mcSeekAssociatedItems(connection, bookId, onError, aftermath) {
+   sql='SELECT id,author,text FROM `comments` WHERE `book_id` = ? ;' ;
+   connection.query(sql, bookId, function (error, results, fields) {
+       if (error) {
+           onError();
+           throw error;
+       } else {
+         aftermath(results);
+      }
+   });
+}
+
 
 
 module.exports={
     createModel : mcCreateModel,
     dropModel : mcDropModel,
     insertValue : mcInsertValue,
-    seedModel : mcSeedModel
+    seedModel : mcSeedModel,
+    seekAssociatedItems : mcSeekAssociatedItems
 };
 
 /*

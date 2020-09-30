@@ -58,8 +58,8 @@ function mcSeedModel(connection) {
 }
 
 function mcSeekItem(connection, bookId, onError, aftermath) {
-   sql='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
-   connection.query(sql, [bookId], function (error, results, fields) {
+   sql='SELECT id,title,image,description FROM `books` WHERE `id` = ? ;' ;
+   connection.query(sql, bookId, function (error, results, fields) {
        if (error) {
            console.log(error);
            onError();
