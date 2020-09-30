@@ -1,5 +1,4 @@
 var mc = require('./mysql_connection');
-var mcInitiateConnection = mc.initiateConnection ;
 
 
 function mcCreateModel(connection) {
@@ -48,16 +47,16 @@ function mcSeedModel(connection) {
 }
 
 
+
 module.exports={
     createModel : mcCreateModel,
     dropModel : mcDropModel,
-    initiateConnection : mcInitiateConnection,
     insertValue : mcInsertValue,
     seedModel : mcSeedModel
 };
 
 /*
-connection = commentModule.initiateConnection();
+connection = mysqlModule.initiateConnection();
 commentModule.dropModel(connection);
 commentModule.createModel(connection);
 commentModule.seedModel(connection);

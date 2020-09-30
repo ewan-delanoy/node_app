@@ -1,5 +1,4 @@
 var mc = require('./mysql_connection');
-var mcInitiateConnection = mc.initiateConnection ;
 
 
 function mcCreateModel(connection) {
@@ -58,18 +57,38 @@ function mcSeedModel(connection) {
   });
 }
 
+function mcSeekItem(connection, bookId, onError, aftermath) {
+   sql='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
+   connection.query(sql, [bookId], function (error, results, fields) {
+       if (error) {
+           console.log(error);
+           onError();
+       } else {
+         foundBook = results[0];
+         aftermath(foundBook);
+      }
+   });
+}
 
+function mcSeekAllItems(connection, aftermath) {
+  connection.query('SELECT * FROM `books`', function (error, results, fields) {
+      if (error)
+          throw error;
+      aftermath(results);
+  });
+}
 
 module.exports={
     createModel : mcCreateModel,
     dropModel : mcDropModel,
-    initiateConnection : mcInitiateConnection,
     insertValue : mcInsertValue,
-    seedModel : mcSeedModel
+    seedModel : mcSeedModel,
+    seekAllItems : mcSeekAllItems,
+    seekItem : mcSeekItem
 };
 
 /*
-connection = bookModule.initiateConnection();
+connection = mysqlModule.initiateConnection();
 bookModule.dropModel(connection);
 bookModule.createModel(connection);
 bookModule.seedModel(connection);

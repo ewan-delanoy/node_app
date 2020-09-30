@@ -5,12 +5,16 @@ var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
+var passport = require('passport');
+var localStrategy = require('passport-local');
+
 
 var connection = {};
 
 var mysqlModule = require ('./models/mysql_connection.js');
 var bookModule = require ('./models/book.js');
 var commentModule = require ('./models/comment.js');
+var userModule = require ('./models/user.js');
 
 /* checkpoint */
 
@@ -21,6 +25,15 @@ var app = express();
 app.set('view engine','ejs');
 app.use(express.static(__dirname + '/public'));
 
+// passport configuration
+
+app.use(require("express-session")({
+   secret: 'On the road again ...',
+   resave: false,
+   saveUninitialized: false
+
+}))
+
 app.use(bodyParser.urlencoded({extended:true}));
 
 app.get('/', function(req, res) {
@@ -30,12 +43,10 @@ app.get('/', function(req, res) {
 // INDEX route
 app.get('/books', function(req, res) {
   connection = mysqlModule.initiateConnection();
-  connection.query('SELECT * FROM `books`', function (error, results, fields) {
-      if (error)
-          throw error;
-      res.render('books/index',{books:results});
+  bookModule.seekAllItems(connection,function(results){
+     connection.end();
+     res.render('books/index',{books:results});
   });
-  connection.end();
 });
 
 // CREATE route
@@ -85,7 +96,7 @@ app.get('/books/:id', function(req, res) {
 
 // NEW route
 app.get('/books/:id/comments/new', function(req, res) {
-  connection = bookModule.initiateConnection();
+  connection = mysqlModule.initiateConnection();
   sql1='SELECT id,title,image,description FROM `books` WHERE `id` = ? ;' ;
   connection.query(sql1, [req.params.id], function (error, results, fields) {
       if (error) {
@@ -100,29 +111,29 @@ app.get('/books/:id/comments/new', function(req, res) {
 
 // CREATE route
 app.post('/books/:id/comments', function(req, res) {
-   connection = commentModule.initiateConnection();
-   // lookup book using ID
-   bookId = req.params.id;
-   sql1='SELECT title,image,description FROM `books` WHERE `id` = ? ;' ;
-   connection.query(sql1, [bookId], function (error, results, fields) {
-       if (error) {
-           console.log(error);
-           res.redirect("/books");
-       } else {
-         foundBook = results[0];
-         foundComment = req.body.comment;
-         foundData = {book_id:bookId,author:foundComment.author,text:foundComment.text};
-         console.log(req.body);
-         console.log(foundData);
-         commentModule.insertValue(connection,foundData,function(){
-           connection.end();
-           res.redirect('/books/' + bookId );
-
-         });
-      }
-   });
+   connection = mysqlModule.initiateConnection();
+   bookId = req.params.id ;
+   bookModule.seekItem(connection, bookId,function(){res.redirect("/books");}, function(foundBook){
+     foundComment = req.body.comment;
+     foundData = {book_id:bookId,author:foundComment.author,text:foundComment.text};
+     commentModule.insertValue(connection,foundData,function(){
+       connection.end();
+       res.redirect('/books/' + bookId );
+     });
+  });
 });
 
+
+// ======
+// AUTH routes
+
+app.get('/register', function(req, res) {
+    res.render('register');
+});
+
+app.post('/register', function(req, res) {
+    res.render('register');
+});
 
 app.listen(3007,'127.0.0.1',function() {
      console.log("Server has started !");
