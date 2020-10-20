@@ -1,23 +1,35 @@
 
-var express = require('express');
+const express = require('express');
+const app = express();
+const path = require('path');
+
+
 
 var connection = {};
 
-var mysqlModule = require('./models/mysql_connection.js');
+const mysqlModule = require('./models/mysql_connection.js');
+const bookModule = require('./models/book.js');
 
 /* checkpoint */
 
-var app = express();
 
 app.set('view engine', 'ejs');
-app.use(express.static(__dirname + '/public'));
+app.set('views', path.join(__dirname, 'views'));
+/* app.use(express.static(__dirname + '/public')); */
 
+app.get('/', (req, res) => {
+  res.render('home');
+});
 
-app.listen(3007, '127.0.0.1', function () {
+app.listen(3007, '127.0.0.1', () => {
   /*
   connection = mysqlModule.initiateConnection();
   userModule.seekItemId(connection,'Suzanne Vega',function(results){console.log(results);console.log(results.length);});
   */
-  console.log("Server has started !");
+  connection = mysqlModule.initiateConnection();
+  bookModule.dropModel(connection);
+  bookModule.createModel(connection);
+  bookModule.seedModel(connection);
+  console.log("Serving on port 3000");
 });
 
