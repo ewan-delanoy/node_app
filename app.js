@@ -21,15 +21,25 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
+app.get('/books', async (req, res) => {
+  connection = mysqlModule.initiateConnection();
+  const books = await bookModule.seekAllItems(connection);
+  connection.end();
+  res.render('books/index');
+});
+
+
 app.listen(3007, '127.0.0.1', () => {
   /*
   connection = mysqlModule.initiateConnection();
   userModule.seekItemId(connection,'Suzanne Vega',function(results){console.log(results);console.log(results.length);});
   */
+  /*
   connection = mysqlModule.initiateConnection();
-  bookModule.dropModel(connection);
+  await bookModule.dropModel(connection);
   bookModule.createModel(connection);
   bookModule.seedModel(connection);
+  */
   console.log("Serving on port 3000");
 });
 

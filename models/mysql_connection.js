@@ -1,4 +1,5 @@
-var mysql = require('mysql');
+const mysql = require('mysql');
+const util = require('util');
 
 
 function mcInitiateConnection() {
@@ -14,16 +15,10 @@ function mcInitiateConnection() {
 
 
 function mcDropModel(connection, modelName) {
-  sql = 'DROP TABLE IF EXISTS `' + modelName + '`';
-  sql2 = 'COMMIT;'
-  connection.query(sql, function (error, results, fields) {
-    if (error)
-      throw error;
-    connection.query(sql2, function (error2, results2, fields2) {
-      if (error2)
-        throw error2;
-    });
-  });
+  const sql = 'DROP TABLE IF EXISTS `' + modelName + '`';
+  return util.promisify(connection.query).call(sql).catch(
+    error => console.log("Error 001 : ", error)
+  );
 }
 
 module.exports = {
