@@ -3,16 +3,22 @@ let mc = require('./mysql_connection');
 
 
 async function mcCreateModel(connection) {
-    const sql = 'CREATE TABLE `books` (' +
+    sql = 'CREATE TABLE `books` (' +
         '`id` int(11) PRIMARY KEY,' +
         '`title` varchar(50) NOT NULL,' +
-        '`price` varchar(50) NOT NULL,' +
         '`image` varchar(255) NOT NULL,' +
         '`description` mediumtext' +
         ') ENGINE=InnoDB DEFAULT CHARSET=utf8;';
-    return util.promisify(connection.query).call(sql).catch(
-        error => console.log("Error 002 : ", error)
-    );
+    return new Promise(function (resolve, reject) {
+        connection.query(sql, function (error, results, fields) {
+            if (error) {
+                console.log("Error in book.createModel : ", error);
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
 }
 
 /*
@@ -23,70 +29,101 @@ async function mcCreateModel(connection) {
 CREATE TABLE `books` (
   `id` int(11) NOT NULL,
   `title` varchar(50) NOT NULL,
-  `price` varchar(50) NOT NULL,
   `image` varchar(255) NOT NULL,
   `description` mediumtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 */
 
 async function mcDropModel(connection) {
-    mc.dropModel(connection, 'books');
+    return mc.dropModel(connection, 'books');
 }
 
 
-async function mcInsertValue(connection, data, aftermath) {
-    const sql1 = 'SELECT MAX(`id`) as maxid FROM `books`';
-    const idx1 = results1[0].maxid + 1;
-    const results1 = await util.promisify(connection.query).call(sql1).catch(
-        error => console.log("Error 003 : ", error)
-    );
-    const sql2 = 'INSERT INTO `books` (`id`,`title`,`price`,`image`,`description`) VALUES(?,?,?,?,?);';
-    return util.promisify(connection.query).call(sql2,
-        [idx1, data.title, data.price, data.image, data.description, data.location])
-        .catch(
-            error => console.log("Error 004 : ", error)
-        );
+async function mcInsertValue(connection, data) {
+    let sql1 = 'SELECT MAX(`id`) as maxid FROM `books`';
+    return new Promise(function (resolve, reject) {
+        connection.query(sql1, function (error1, results1, fields1) {
+            if (error1) {
+                reject(error1);
+            } else {
+                let idx1 = results1[0].maxid + 1;
+                let sql2 = 'INSERT INTO `books` (`id`,`title`,`image`,`description`) VALUES(?,?,?,?);';
+                connection.query(sql2, [idx1, data.title, data.image, data.description], function (error2, results2, fields2) {
+                    if (error2) {
+                        reject(error2);
+                    } else {
+                        resolve(idx1);
+                    }
+                });
+            }
+        });
+    }).catch(err => console.log("Error in mcInsertValue : ", err));
 }
 
 async function mcSeedModel(connection) {
     await mcInsertValue(connection,
         {
-            title: 'Barren Metal', price: '$20',
+            title: 'Barren Metal',
             image: 'https://i.ibb.co/9chC4tL/barren-metal.jpg',
             description: 'd1'
         });
     await mcInsertValue(connection,
         {
-            title: 'The Missisipi flows into the Tiber', price: '$30',
+            title: 'The Missisipi flows into the Tiber',
             image: 'https://i.ibb.co/WpG5Hd9/mississipi.jpg',
             description: 'd2'
         });
     await mcInsertValue(connection,
         {
-            title: 'The broken pump in Tanzania', price: '$40',
-            image: 'https://i.ibb.co/3mf7fzz/pump-in-tanzania.jpg', description: 'd3'
+            title: 'The broken pump in Tanzania',
+            image: 'https://i.ibb.co/3mf7fzz/pump-in-tanzania.jpg',
+            description: 'd3'
         });
 }
 
-async function mcSeekItem(connection, bookId) {
-    const sql = 'SELECT id,title,price,image,description FROM `books` WHERE `id` = ? ;';
-    return util.promisify(connection.query).call(sql2, [bookId])
-        .then(
-            results => results[0]
-        ).catch(
-            error => console.log("Error 005 : ", error)
-        );
+function mcSeekItem(connection, bookId) {
+    sql = 'SELECT id,title,image,description FROM `books` WHERE `id` = ? ;';
+    return new Promise(function (resolve, reject) {
+        connection.query(sql, bookId, function (error, results, fields) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results[0]);
+            }
+        });
+    }).catch(err => console.log("Error in mcSeekItem : ", err));
+
 }
 
 async function mcSeekAllItems(connection) {
-    const sql = 'SELECT * FROM `books`';
-    return util.promisify(connection.query).call(sql)
-        .then(
-            results => results
-        ).catch(
-            error => console.log("Error 006 : ", error)
-        );
+    return new Promise(function (resolve, reject) {
+        connection.query('SELECT * FROM `books`', function (error, results, fields) {
+            if (error) {
+                console.log("Error in book.seekAllItems : ", error);
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    }).catch(err => console.log("Error in mcSeekAllItems : ", err));
 }
+
+async function mcUpdateValue(connection, data) {
+    let sql1 = 'UPDATE `books` SET `title`=?, `image`=?, `description`=? ' +
+        'WHERE `id`=?;';
+    return new Promise(function (resolve, reject) {
+        connection.query(sql1, [data.title, data.image, data.description, data.id],
+            function (error, results, fields) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            }
+        );
+    }).catch(err => console.log("Error in mcUpdateValue : ", err));
+}
+
 
 module.exports = {
     createModel: mcCreateModel,
@@ -94,7 +131,8 @@ module.exports = {
     insertValue: mcInsertValue,
     seedModel: mcSeedModel,
     seekAllItems: mcSeekAllItems,
-    seekItem: mcSeekItem
+    seekItem: mcSeekItem,
+    updateValue: mcUpdateValue,
 };
 
 /*
