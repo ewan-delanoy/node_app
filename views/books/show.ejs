@@ -1,22 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show book</title>
-</head>
-
-<body>
-    <h1> BOOK INFORMATION </h1>
-    <h2> <%= book.title %> </h2>
-    <h2> <%= book.description %> </h2>
-    <p>
-        <a href="/books/<%= book.id %>/edit"> Edit </a>
-    </p>
-    <footer>
-        <a href="/books"> All books </a>
-    </footer>
-</body>
-
-</html>
+<% layout('layouts/boilerplate') %>
+<h1> BOOK INFORMATION </h1>
+<h2> <%= book.title %> </h2>
+<img src="<%= book.image %>" alt="">
+<p> <%= book.description %> </p>
+<p>
+    <a href="/books/<%= book.id %>/edit"> Edit </a>
+</p>
+<p>
+<form action="/books/<%= book.id %>?_method=DELETE" method="POST">
+    <button> Delete </button>
+</form>
+</p>
+<footer>
+    <a href="/books"> All books </a>
+</footer>

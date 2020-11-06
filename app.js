@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const methodOverride = require('method-override');
+const ejsMate = require('ejs-mate');
 
 
 let connection = {};
@@ -12,7 +13,7 @@ const bookModule = require('./models/book.js');
 
 /* checkpoint */
 
-
+app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 /* app.use(express.static(__dirname + '/public')); */
@@ -57,7 +58,9 @@ app.get('/books/new', (req, res) => {
 
 app.post('/books', async (req, res) => {
   const newBookData = req.body.book;
-  newBookData.image = 'uvw';
+  console.log("Here is the req.body : ", req.body);
+  console.log("Here is the newBookData : ", newBookData);
+  if (!newBookData.price) { newBookData.price = '127.68'; }
   connection = mysqlModule.initiateConnection();
   const newBookId = await bookModule.insertValue(connection, newBookData);
   connection.end();
@@ -71,7 +74,13 @@ app.get('/books/:id', async (req, res) => {
   res.render('books/show', { book });
 });
 
-
+app.delete('/books/:id', async (req, res) => {
+  const bookId = req.params.id;
+  connection = mysqlModule.initiateConnection();
+  await bookModule.deleteValue(connection, bookId);
+  connection.end();
+  res.redirect(`/books`);
+});
 
 
 app.listen(3007, '127.0.0.1', async () => {
@@ -79,13 +88,13 @@ app.listen(3007, '127.0.0.1', async () => {
   connection = mysqlModule.initiateConnection();
   userModule.seekItemId(connection,'Suzanne Vega',function(results){console.log(results);console.log(results.length);});
   */
-  /*
+
   connection = mysqlModule.initiateConnection();
 
   await bookModule.dropModel(connection);
   await bookModule.createModel(connection);
   await bookModule.seedModel(connection);
-  */
+
   console.log("Serving on port 3000");
 });
 

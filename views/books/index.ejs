@@ -1,22 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
+<% layout('layouts/boilerplate') %>
+<h1> All books</h1>
+<div>
+    <a href="/books/new"> Add new book </a>
+</div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Books</title>
-</head>
-
-<body>
-    <h1> All books</h1>
-    <div>
-        <a href="/books/new"> Add new book </a>
+<% for (let book of books) { %>
+<div class="card" mb-3>
+    <div class="col-md-4">
+        <img class="img-fluid" src="<%= book.image %>" alt="">
     </div>
-    <ul>
-        <% for (let book of books) { %>
-        <li> <a href="/books/<%= book.id %>"> <%= book.title %> </a> </li>
-        <% } %>
-    </ul>
-</body>
-
-</html>
+    <div class="col-mg-8">
+        <h5 class="card-title"><%= book.title %></h5>
+        <p class="card-text"><%= book.description %></p>
+        <p class="card-text">
+            <small class="text-muted"><%= book.publisher %></small>
+        </p>
+        <a class="btn btn-primary" href="/books/<%= book.id %>">View <%= book.title %></a>
+    </div>
+</div>
+<% } %>
