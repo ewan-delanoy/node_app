@@ -38,14 +38,14 @@ app.get('/books/:id/edit', async (req, res) => {
   connection = mysqlModule.initiateConnection();
   const book = await bookModule.seekItem(connection, req.params.id);
   connection.end();
-  res.render('books/edit', { book });
+  console.log("This is the book :", book);
+  res.render('books/edit', { book: book });
 });
 
 app.put('/books/:id', async (req, res) => {
   const bookId = parseInt(req.params.id);
   let bookData = req.body.book;
   bookData.id = bookId;
-  bookData.image = 'uvw';
   connection = mysqlModule.initiateConnection();
   await bookModule.updateValue(connection, bookData);
   connection.end();
@@ -58,9 +58,6 @@ app.get('/books/new', (req, res) => {
 
 app.post('/books', async (req, res) => {
   const newBookData = req.body.book;
-  console.log("Here is the req.body : ", req.body);
-  console.log("Here is the newBookData : ", newBookData);
-  if (!newBookData.price) { newBookData.price = '127.68'; }
   connection = mysqlModule.initiateConnection();
   const newBookId = await bookModule.insertValue(connection, newBookData);
   connection.end();
@@ -71,7 +68,7 @@ app.get('/books/:id', async (req, res) => {
   connection = mysqlModule.initiateConnection();
   const book = await bookModule.seekItem(connection, req.params.id);
   connection.end();
-  res.render('books/show', { book });
+  res.render('books/show', { book: book });
 });
 
 app.delete('/books/:id', async (req, res) => {
@@ -91,9 +88,11 @@ app.listen(3007, '127.0.0.1', async () => {
 
   connection = mysqlModule.initiateConnection();
 
+  /*
   await bookModule.dropModel(connection);
   await bookModule.createModel(connection);
   await bookModule.seedModel(connection);
+  */
 
   console.log("Serving on port 3000");
 });

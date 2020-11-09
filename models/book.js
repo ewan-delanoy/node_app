@@ -107,7 +107,7 @@ async function mcSeedModel(connection) {
 }
 
 function mcSeekItem(connection, bookId) {
-    sql = 'SELECT id,title,image,price,description FROM `books` WHERE `id` = ? ;';
+    sql = 'SELECT id,title,image,price,publisher,description FROM `books` WHERE `id` = ? ;';
     return new Promise(function (resolve, reject) {
         connection.query(sql, bookId, function (error, results, fields) {
             if (error) {
